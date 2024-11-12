@@ -11,19 +11,13 @@ public:
      * Insert a tuple, indicating that the tuple is inserted and appended to the end of the disk.
      * @param tuple Inserted tuple.
      */
-    void insertTuple(const std::vector<int>& tuple) {
-        storage.push_back(tuple);
-    }
+    void insertTuple(const std::vector<int>& tuple);
     /**
      * Deletion function. Pass a tuple and tupleId, indicating that the tuple at the tupleId position is deleted.
      * @param tuple Deleted tuple.
      * @param tupleId Location of the deleted tuple.
      */
-    void deleteTuple(const std::vector<int>& tuple, int tupleId) {
-        if (tupleId >= 0 && tupleId < storage.size() && storage[tupleId] == tuple) {
-            storage.erase(storage.begin() + tupleId);
-        }
-    }
+    void deleteTuple(const std::vector<int>& tuple, int tupleId);
     /**
      * Query function, pass in expression, return estimated cardinality result.
      * @param quals expression.
