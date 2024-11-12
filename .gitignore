@@ -1,0 +1,43 @@
+# Compiled object files
+*.o
+
+# Compiled dynamic libraries
+*.so
+
+# Compiled static libraries
+*.a
+*.lib
+
+# Executable files
+*.out
+*.exe
+
+# Debug files
+*.dSYM/
+*.dSBT/
+*.dSYM.zip
+
+# Generated files
+*.dll
+*.dylib
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.swp
+*.swo
+
+# IDE specific files
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
