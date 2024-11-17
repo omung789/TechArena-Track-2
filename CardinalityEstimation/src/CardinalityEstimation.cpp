@@ -33,14 +33,13 @@ int CEEngine::query(const std::vector<CompareExpression>& quals)
     int S2Counter = 0;
     for (CompareExpression expression : quals) {
         switch (expression.compareOp) {
-            // Equal
-            case 0:
+            case EQUAL:
                 if (storage.at(expression.columnIdx).at(1) == expression.value) {
                     S2Counter += 1;
                 }
                 break;
-                // Greater Than
-            case 1:
+
+            case GREATER:
                 if (storage.at(expression.columnIdx).at(0) > expression.value) {
                     S1Counter += 1;
                 }
@@ -49,10 +48,7 @@ int CEEngine::query(const std::vector<CompareExpression>& quals)
                 break;
         }
     }
-    if (S1Counter == 1 && S2Counter == 1) {
-        return 1;
-    }
-    return 0;
+    return (S1Counter && S2Counter);
 }
 
 void CEEngine::prepare()
