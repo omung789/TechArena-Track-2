@@ -1,1 +1,13 @@
-# todo
+name: does-it-cmpl
+run-name: Attempting to compile
+on:
+  pull-request: 
+    branches:
+      - main
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
