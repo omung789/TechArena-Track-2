@@ -1,12 +1,12 @@
-//
-// You should modify this file.
-//
-#include <CardinalityEstimation.h>
-#include <common/Root.h>
+#include <include/CardinalityEstimation.h>
+#include <include/common/Root.h>
 
 void CEEngine::insertTuple(const std::vector<int> &tuple) {
     // Implement your insert tuple logic here.
     storage.push_back(tuple);
+
+    ColumnAStats->ProcessNewInput(tuple[0]);
+    ColumnBStats->ProcessNewInput(tuple[1]);
 }
 
 void CEEngine::deleteTuple(const std::vector<int> &tuple, int tupleId) {
@@ -21,6 +21,40 @@ int CEEngine::query(const std::vector<CompareExpression> &quals) {
     int matches = 0;
 
     for (CompareExpression expression : quals) {
+        if (expression.columnIdx == 0) {
+            // Querying Column A
+            if (ColumnAStats->getRecords() == 0) {
+                // there will be no matches to the query
+                continue;
+            }
+
+            if (expression.value < ColumnAStats->getMin()) {
+                // there will no matches to the query
+                continue;
+            }
+
+            if (expression.value > ColumnAStats->getMax() && expression.compareOp != CompareOp::GREATER) {
+                // there will no matches to the query
+                continue;
+            }
+        } else {
+            // Querying Column B
+            if (ColumnBStats->getRecords() == 0) {
+                // there will be no matches to the query
+                continue;
+            }
+
+            if (expression.value < ColumnBStats->getMin()) {
+                // there will no matches to the query
+                continue;
+            }
+
+            if (expression.value > ColumnBStats->getMax() && expression.compareOp != CompareOp::GREATER) {
+                // there will no matches to the query
+                continue;
+            }
+        }
+
         for (std::vector<int> tuple : storage) {
             switch (expression.compareOp) {
                 case CompareOp::EQUAL:
@@ -50,4 +84,6 @@ void CEEngine::prepare() {
 CEEngine::CEEngine(int num, DataExecuter *dataExecuter) {
     // Implement your constructor here.
     this->dataExecuter = dataExecuter;
+    this->ColumnAStats = new ColumnStats();
+    this->ColumnBStats = new ColumnStats();
 }
