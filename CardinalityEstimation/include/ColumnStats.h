@@ -12,12 +12,23 @@
 
 class ColumnStats {
    public:
+
+    /**
+     * @brief Construct a new Column Stats object, without a list of data to create a column from. Will need to add data through ProcessNewInput().
+     * 
+     */
     ColumnStats() {
         setMin(INT_MAX);
         setMax(INT_MIN);
         setRecords(0);
     };
 
+    /**
+     * @brief Construct a new Column Stats object
+     * 
+     * @param column: List of data to create a column from, and use for statisc calcualtion
+
+     */
     ColumnStats(std::vector<int> column) {
         setMin(column.at(0));
         setMax(column.at(0));
