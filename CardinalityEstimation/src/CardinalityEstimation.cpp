@@ -18,24 +18,28 @@ void CEEngine::deleteTuple(const std::vector<int> &tuple, int tupleId) {
 
 int CEEngine::query(const std::vector<CompareExpression> &quals) {
     // Implement your query logic here.
-    int matches = 0;
+    int matches = 1;
 
     for (CompareExpression expression : quals) {
         switch (expression.columnIdx) {
             case ColumnIdx::COLUMN_A:
-                matches += ColumnAStats->handleQuery(expression.value, expression.compareOp);
+                matches *= ColumnAStats->HandleQuery(expression.value, expression.compareOp) / ColumnAStats->getRecords();
                 break;
             case ColumnIdx::COLUMN_B:
-                matches += ColumnBStats->handleQuery(expression.value, expression.compareOp);
+                matches *= ColumnBStats->HandleQuery(expression.value, expression.compareOp) / ColumnBStats->getRecords();
                 break;
             default:
                 // if it gets here were cooked ngl
                 // means theyre querying another column that isnt a or b.
+                std::cout << "Fuck";
                 break;
+        }
+        if (matches == 0) {
+            return 0;
         }
     }
 
-    return matches;
+    return int(matches * ColumnAStats->getRecords());
 }
 
 void CEEngine::prepare() {
