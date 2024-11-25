@@ -32,6 +32,33 @@ class ColumnStats {
         incrementRecords();
     }
 
+    bool InRange(int target, CompareOp compareOp) {
+        // if column is empty
+        if (this->getRecords()==0){
+            return false;
+        }
+
+        // if they are requesting a value below minimum
+        if (this->getMin() > target){
+            return false;
+        }
+
+        if (this->getMax() < target && compareOp == CompareOp::EQUAL){
+            return false;
+        } 
+
+        return true
+
+
+
+        if (compareOp == CompareOp::EQUAL) {
+            return target >= this->getMin() && target <= this->getMax();
+        } else {
+            return target >= this->getMin();
+        }
+
+    }
+
     /**
      * @brief Get the minimum value in the column.
      *

@@ -21,40 +21,24 @@ int CEEngine::query(const std::vector<CompareExpression> &quals) {
     int matches = 0;
 
     for (CompareExpression expression : quals) {
-        if (expression.columnIdx == 0) {
-            // Querying Column A
-            if (ColumnAStats->getRecords() == 0) {
-                // there will be no matches to the query
-                continue;
-            }
-
-            if (expression.value < ColumnAStats->getMin()) {
-                // there will no matches to the query
-                continue;
-            }
-
-            if (expression.value > ColumnAStats->getMax() && expression.compareOp != CompareOp::GREATER) {
-                // there will no matches to the query
-                continue;
-            }
-        } else {
-            // Querying Column B
-            if (ColumnBStats->getRecords() == 0) {
-                // there will be no matches to the query
-                continue;
-            }
-
-            if (expression.value < ColumnBStats->getMin()) {
-                // there will no matches to the query
-                continue;
-            }
-
-            if (expression.value > ColumnBStats->getMax() && expression.compareOp != CompareOp::GREATER) {
-                // there will no matches to the query
-                continue;
-            }
+        switch (expression.columnIdx) {
+            case ColumnIdx::COLUMN_A:
+                if (!ColumnAStats->InRange(expression.value, expression.compareOp)) {
+                    continue;
+                }
+                break;
+            case ColumnIdx::COLUMN_B:
+                if (!ColumnBStats->InRange(expression.value, expression.compareOp)) {
+                    continue;
+                }
+                break;
+            default:
+                // if it gets here were cooked ngl
+                // means theyre querying another column that isnt a or b.
+                break;
         }
 
+        // brute force
         for (std::vector<int> tuple : storage) {
             switch (expression.compareOp) {
                 case CompareOp::EQUAL:
