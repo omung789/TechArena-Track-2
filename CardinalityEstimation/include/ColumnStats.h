@@ -3,8 +3,9 @@
 // TODO: 
 // - 1. Get it to compile
 // - 2. Make sure imports work
-// - 3. Add numberOfInterationsOfMax
-// - 4. If max is deleted and all instances of max are deleted, then take the midpoint of the highest populated bucket
+
+// - 3. Add numberOfInterationsOfMax -> keepingtrack of number of mins and maxes, reset when max changes or new value is added that is equal to max
+// - 4. If max is deleted and all instances of max are deleted, then take the midpoint of the highest populated bucket -> decrementaing relevant bucket
 
 class ColumnStats {
    public:
