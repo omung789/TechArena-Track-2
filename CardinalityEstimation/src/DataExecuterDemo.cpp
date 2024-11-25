@@ -213,6 +213,8 @@ double DataExecuterDemo::answer(int ans)
         if (flag)
             cnt++;
     }
+
     double error = fabs(std::log((ans + 1) * 1.0 / (cnt + 1)));
+    
     return error;
 };

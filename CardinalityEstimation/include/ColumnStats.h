@@ -1,21 +1,81 @@
 #include <common/Root.h>
 
+// TODO: 
+// - 1. Get it to compile
+// - 2. Make sure imports work
+// - 3. Add numberOfInterationsOfMax
+// - 4. If max is deleted and all instances of max are deleted, then take the midpoint of the highest populated bucket
+
 class ColumnStats {
    public:
+    /**
+     * @brief Construct a new Column Stats object, without a list of data to create a column from. Will need to add data through ProcessNewInput().
+     *
+     */
     ColumnStats() {
         setMin(INT_MAX);
         setMax(INT_MIN);
         setRecords(0);
+        buckets = new int[MAX_VAL / BUCKET_WIDTH]();
     };
 
-    ColumnStats(std::vector<int> column) {
-        setMin(column.at(0));
-        setMax(column.at(0));
-        setRecords(column.size());
+    int HandleQuery(int target, CompareOp compareOp) {
+        if (!InRange(target, compareOp)) {
+            return 0;
+        }
 
-        // set min and max
-        AnalyseColumn(column);
-    };
+        if (compareOp == CompareOp::GREATER) {
+            if (target <= this->getMin()) {
+                return this->getRecords();
+            } else {
+                return this->GuessRowsGreaterThan(target);
+            }
+        }
+
+        // determine probability that it is in it's bucket
+        // number of rows in bucket / (bucket size) -> skewed data fucks it
+        int bucketID = FindBucket(target);
+        int rowsInBucket = GetBucketRows(bucketID);
+
+        // gets lower bound of higher bucket and minuses lower bound of lower bucket
+        // probability that a number in range [bucketMin, buacketMax] is in the bucket that is bound by [bucketMin, bucketMax]
+        // i.e., the probability that number 5 is in bucket [0, 10]
+        double p = rowsInBucket / this->BUCKET_WIDTH;
+
+        return p > 0.5 ? 1 : 0;
+    }
+
+    int FindBucket(int target) {
+        // return the bucket id of the target value's bucket
+        return int(target / this->BUCKET_WIDTH) - 1;
+    }
+
+    int GuessRowsGreaterThan(int target) {
+        // get bucket data
+        int BucketID = this->FindBucket(target);
+        int bucketSize = this->GetBucketRows(BucketID);
+        int bucketMin = BucketID * this->BUCKET_WIDTH;
+
+        // caluclate how far 'into' the bucket the target is
+        // will be more accurate the closer to a unifrom distribution the bucket is is
+        int targetPercentage = (target - bucketMin) / this->BUCKET_WIDTH;
+
+        // how many rows are less than or equal to target
+        int rowsLessThanTarget = targetPercentage * bucketSize;
+
+        // how many rows are in higher buckets
+        int rowsInHigherBuckets = 0;
+        for (int i = BucketID + 1; i < this->MAX_VAL/this->BUCKET_WIDTH; i++) {
+            rowsInHigherBuckets += this->GetBucketRows(i);
+        }
+
+        return rowsLessThanTarget + rowsInHigherBuckets;
+    }
+
+    int GetBucketRows(int bucketID) {
+        // return the number of values in the bucket
+        return this->buckets[bucketID];
+    }
 
     void ProcessNewInput(int newData) {
         if (this->getRecords() == 0) {
@@ -29,34 +89,44 @@ class ColumnStats {
                 setMax(newData);
             }
         }
+
+        // add to bucket
+        this->buckets[this->FindBucket(newData)]++;
+
         incrementRecords();
     }
 
+    /**
+     * @brief Takes query data (target and compareOP) and determines if the result will ALWAYS be 0
+     *
+     * @param target
+     * @param compareOp
+     * @return true
+     * @return false
+     */
     bool InRange(int target, CompareOp compareOp) {
         // if column is empty
-        if (this->getRecords()==0){
+        if (this->getRecords() == 0) {
             return false;
         }
 
-        // if they are requesting a value below minimum
-        if (this->getMin() > target){
-            return false;
-        }
-
-        if (this->getMax() < target && compareOp == CompareOp::EQUAL){
-            return false;
-        } 
-
-        return true
-
-
-
+        // if searching for something less than minimum or greater than maximum
         if (compareOp == CompareOp::EQUAL) {
-            return target >= this->getMin() && target <= this->getMax();
-        } else {
-            return target >= this->getMin();
+            if (this->getMax() < target) {
+                return false;
+            }
+            if (this->getMin() > target) {
+                return false;
+            }
         }
 
+        if (compareOp == CompareOp::GREATER) {
+            if (this->getMax() < target) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -98,6 +168,13 @@ class ColumnStats {
     /* Number of records in the column
      */
     int records;
+
+    int BUCKET_WIDTH = 100000;
+    const int MAX_VAL = 20000000;
+
+
+    // bucketId -> number of rows in bucket
+    int* buckets;
 
     /**
      * @brief Generates statistics for a given column and store them in this class's attributes.

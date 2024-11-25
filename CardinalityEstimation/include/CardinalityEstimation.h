@@ -40,6 +40,8 @@ class CEEngine {
 
    private:
     DataExecuter *dataExecuter;
+
+    // key: A -> value: tuple
     std::vector<std::vector<int>> storage;
     ColumnStats *ColumnAStats;
     ColumnStats *ColumnBStats;
