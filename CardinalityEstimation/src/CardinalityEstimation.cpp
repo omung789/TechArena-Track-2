@@ -1,64 +1,73 @@
-//
-// You should modify this file.
-//
-#include <common/Root.h>
-#include <CardinalityEstimation.h>
+#include <include/CardinalityEstimation.h>
+#include <include/common/Root.h>
 
-void CEEngine::insertTuple(const std::vector<int>& tuple)
-{
+void CEEngine::insertTuple(const std::vector<int> &tuple) {
     // Implement your insert tuple logic here.
     storage.push_back(tuple);
 
-    // I think we definitely want to store by id, as we can use binary search to find the tuple when deleting or querying, which is O(log n) instead of O(n)
-    // However that would mean we need to find the correct location to insert the tuple, which obviously increases the complexity of the insert operation from O(1) to O(log n)
-    // CoPilot Suggests: "I think we can just store the tuple in a vector and use the index as the id, which is O(1) for insert, O(1) for delete, and O(1) for query"
-    // - Dylan 12/11/24
+    ColumnAStats->ProcessNewInput(tuple[0]);
+    ColumnBStats->ProcessNewInput(tuple[1]);
 }
 
-void CEEngine::deleteTuple(const std::vector<int>& tuple, int tupleId)
-{
+void CEEngine::deleteTuple(const std::vector<int> &tuple, int tupleId) {
     // Implement your delete tuple logic here.
     if (tupleId >= 0 && tupleId < storage.size() && storage[tupleId] == tuple) {
         storage.erase(storage.begin() + tupleId);
     }
-
-    // Based on my suggestion in insertTuple, we can bin search for the tuple and delete it in O(log n) time, implement this in query and call it from delete???
-    // - Dylan 12/11/24
 }
 
-int CEEngine::query(const std::vector<CompareExpression>& quals)
-{
+int CEEngine::query(const std::vector<CompareExpression> &quals) {
     // Implement your query logic here.
-    int S1Counter = 0;
-    int S2Counter = 0;
+    int matches = 0;
+
     for (CompareExpression expression : quals) {
-        switch (expression.compareOp) {
-            case EQUAL:
-                if (storage.at(expression.columnIdx).at(1) == expression.value) {
-                    S2Counter += 1;
+        switch (expression.columnIdx) {
+            case ColumnIdx::COLUMN_A:
+                if (!ColumnAStats->InRange(expression.value, expression.compareOp)) {
+                    continue;
                 }
                 break;
-
-            case GREATER:
-                if (storage.at(expression.columnIdx).at(0) > expression.value) {
-                    S1Counter += 1;
+            case ColumnIdx::COLUMN_B:
+                if (!ColumnBStats->InRange(expression.value, expression.compareOp)) {
+                    continue;
                 }
                 break;
             default:
+                // if it gets here were cooked ngl
+                // means theyre querying another column that isnt a or b.
                 break;
         }
+
+        // brute force
+        for (std::vector<int> tuple : storage) {
+            switch (expression.compareOp) {
+                case CompareOp::EQUAL:
+                    if (tuple[expression.columnIdx] == expression.value) {
+                        matches++;
+                    }
+                    break;
+                case CompareOp::GREATER:
+                    if (tuple[expression.columnIdx] > expression.value) {
+                        matches++;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
-    return (S1Counter && S2Counter);
+
+    return matches;
 }
 
-void CEEngine::prepare()
-{
+void CEEngine::prepare() {
     // Implement your prepare logic here.
     // runs before every action, i.e. prepare -> insertTuple -> prepare -> deleteTuple -> ...
 }
 
-CEEngine::CEEngine(int num, DataExecuter *dataExecuter)
-{
+CEEngine::CEEngine(int num, DataExecuter *dataExecuter) {
     // Implement your constructor here.
     this->dataExecuter = dataExecuter;
+    this->ColumnAStats = new ColumnStats();
+    this->ColumnBStats = new ColumnStats();
 }

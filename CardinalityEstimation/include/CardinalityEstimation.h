@@ -3,27 +3,28 @@
 //
 // You should modify this file.
 //
-#include <executer/DataExecuter.h>
+#include <ColumnStats.h>
 #include <common/Expression.h>
+#include <executer/DataExecuter.h>
 class CEEngine {
-public:
+   public:
     /**
      * Insert a tuple, indicating that the tuple is inserted and appended to the end of the disk.
      * @param tuple Inserted tuple.
      */
-    void insertTuple(const std::vector<int>& tuple);
+    void insertTuple(const std::vector<int> &tuple);
     /**
      * Deletion function. Pass a tuple and tupleId, indicating that the tuple at the tupleId position is deleted.
      * @param tuple Deleted tuple.
      * @param tupleId Location of the deleted tuple.
      */
-    void deleteTuple(const std::vector<int>& tuple, int tupleId);
+    void deleteTuple(const std::vector<int> &tuple, int tupleId);
     /**
      * Query function, pass in expression, return estimated cardinality result.
      * @param quals expression.
      * @return return estimated cardinality result.
      */
-    int query(const std::vector<CompareExpression>& quals);
+    int query(const std::vector<CompareExpression> &quals);
     /**
      * Preprocessing function of the cardinality estimation algorithm. This function is executed before each operation
      * is called.
@@ -37,9 +38,11 @@ public:
     CEEngine(int num, DataExecuter *dataExecuter);
     ~CEEngine() = default;
 
-private:
+   private:
     DataExecuter *dataExecuter;
     std::vector<std::vector<int>> storage;
+    ColumnStats *ColumnAStats;
+    ColumnStats *ColumnBStats;
 };
 
 #endif
