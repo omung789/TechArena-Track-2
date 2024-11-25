@@ -23,37 +23,15 @@ int CEEngine::query(const std::vector<CompareExpression> &quals) {
     for (CompareExpression expression : quals) {
         switch (expression.columnIdx) {
             case ColumnIdx::COLUMN_A:
-                if (!ColumnAStats->InRange(expression.value, expression.compareOp)) {
-                    continue;
-                }
+                matches += ColumnAStats->handleQuery(expression.value, expression.compareOp);
                 break;
             case ColumnIdx::COLUMN_B:
-                if (!ColumnBStats->InRange(expression.value, expression.compareOp)) {
-                    continue;
-                }
+                matches += ColumnBStats->handleQuery(expression.value, expression.compareOp);
                 break;
             default:
                 // if it gets here were cooked ngl
                 // means theyre querying another column that isnt a or b.
                 break;
-        }
-
-        // brute force
-        for (std::vector<int> tuple : storage) {
-            switch (expression.compareOp) {
-                case CompareOp::EQUAL:
-                    if (tuple[expression.columnIdx] == expression.value) {
-                        matches++;
-                    }
-                    break;
-                case CompareOp::GREATER:
-                    if (tuple[expression.columnIdx] > expression.value) {
-                        matches++;
-                    }
-                    break;
-                default:
-                    break;
-            }
         }
     }
 
