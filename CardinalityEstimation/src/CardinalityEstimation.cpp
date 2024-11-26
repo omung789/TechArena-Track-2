@@ -17,6 +17,14 @@ void CEEngine::deleteTuple(const std::vector<int> &tuple, int tupleId) {
 }
 
 int CEEngine::query(const std::vector<CompareExpression> &quals) {
+    // print quals
+    std::cout << "Query parameters:" << std::endl;
+    for (const auto &expression : quals) {
+        std::cout << "Column Index: " << expression.columnIdx
+                  << ", Value: " << expression.value
+                  << ", Compare Operation: " << expression.compareOp << std::endl;
+    }
+
     // Implement your query logic here.
     int matches = 1;
 
@@ -31,7 +39,8 @@ int CEEngine::query(const std::vector<CompareExpression> &quals) {
             default:
                 // if it gets here were cooked ngl
                 // means theyre querying another column that isnt a or b.
-                std::cout << "Fuck";
+                printf("Fuck");
+                fflush(stdout);
                 break;
         }
         if (matches == 0) {
@@ -48,8 +57,17 @@ void CEEngine::prepare() {
 }
 
 CEEngine::CEEngine(int num, DataExecuter *dataExecuter) {
+    printf("Instantiating CEEngine\n");
+    fflush(stdout);
     // Implement your constructor here.
     this->dataExecuter = dataExecuter;
+
+    printf("Instatiating ColumnStat Objects\n");
+    fflush(stdout);
     this->ColumnAStats = new ColumnStats();
     this->ColumnBStats = new ColumnStats();
+
+    printf("Instatiated CEEngine\n");
+
+    fflush(stdout);
 }
