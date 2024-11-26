@@ -57,17 +57,9 @@ void CEEngine::prepare() {
 }
 
 CEEngine::CEEngine(int num, DataExecuter *dataExecuter) {
-    printf("Instantiating CEEngine\n");
-    fflush(stdout);
     // Implement your constructor here.
     this->dataExecuter = dataExecuter;
 
-    printf("Instatiating ColumnStat Objects\n");
-    fflush(stdout);
     this->ColumnAStats = new ColumnStats();
     this->ColumnBStats = new ColumnStats();
-
-    printf("Instatiated CEEngine\n");
-
-    fflush(stdout);
 }

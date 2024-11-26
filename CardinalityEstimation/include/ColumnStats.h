@@ -24,14 +24,9 @@ class ColumnStats {
     };
 
     int HandleQuery(int target, CompareOp compareOp) {
-        printf("Handling query: %d %d\n", target, compareOp);
-        fflush(stdout);
         if (!InRange(target, compareOp)) {
             return 0;
         }
-
-        printf("In range\n");
-        fflush(stdout);
 
         if (compareOp == CompareOp::GREATER) {
             if (target <= this->getMin()) {
@@ -91,11 +86,6 @@ class ColumnStats {
     }
 
     void ProcessNewInput(int newData) {
-        if (newData < 1 || newData > MAX_VAL) {
-            printf("We're so cooked");
-            fflush(stdout);
-        }
-
         if (this->getRecords() == 0) {
             setMin(newData);
             setMax(newData);
@@ -128,21 +118,15 @@ class ColumnStats {
             return false;
         }
 
-        printf("Column is not empty...\n");
-        fflush(stdout);
-
         // if searching for something less than minimum or greater than maximum
         if (compareOp == CompareOp::EQUAL) {
             printf("%d\n", this->getMax());
             if (this->getMax() < target) {
-                printf("Max is less than target\n");
                 return false;
             }
             if (this->getMin() > target) {
-                printf("Min is greater than target\n");
                 return false;
             }
-            fflush(stdout);
         }
 
         if (compareOp == CompareOp::GREATER) {
