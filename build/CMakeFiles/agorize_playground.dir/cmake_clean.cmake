@@ -5,8 +5,9 @@ file(REMOVE_RECURSE
   "CMakeFiles/agorize_playground.dir/CardinalityEstimation/src/DataExecuterDemo.cpp.o.d"
   "CMakeFiles/agorize_playground.dir/CardinalityEstimation/src/main.cpp.o"
   "CMakeFiles/agorize_playground.dir/CardinalityEstimation/src/main.cpp.o.d"
-  "agorize_playground"
+  "agorize_playground.exe"
   "agorize_playground.pdb"
+  "libagorize_playground.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -1,5 +1,5 @@
-#include <../include/CardinalityEstimation.h>
-#include <../include/common/Root.h>
+#include "../include/CardinalityEstimation.h"
+#include "../include/common/Root.h"
 
 void CEEngine::insertTuple(const std::vector<int> &tuple) {
     // Implement your insert tuple logic here.

@@ -1,4 +1,4 @@
-#include <CardinalityEstimation.h>
+#include "../include/CardinalityEstimation.h"
 #include <executer/DataExecuterDemo.h>
 
 int main(int argc, char *argv[]) {
