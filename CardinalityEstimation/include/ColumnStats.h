@@ -1,4 +1,6 @@
 #include <common/Root.h>
+#include <common/Expression.h>
+#include <climits>
 
 // TODO: 
 // - 1. Get it to compile
