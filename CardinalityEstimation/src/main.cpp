@@ -12,13 +12,22 @@ int main(int argc, char *argv[])
     CEEngine ceEngine(initSize, &dataExecuter);
     Action action = dataExecuter.getNextAction();
 
+    printf("Starting main loop\n");
+    fflush(stdout);
+
     while (action.actionType != NONE) {
         ceEngine.prepare();
         if (action.actionType == INSERT) {
+            printf("Inserting tuple\n");
+            fflush(stdout);
             ceEngine.insertTuple(action.actionTuple);
         } else if (action.actionType == DELETE) {
+            printf("Deleting tuple\n");
+            fflush(stdout);
             ceEngine.deleteTuple(action.actionTuple, action.tupleId);
         } else if (action.actionType == QUERY) {
+            printf("Querying\n");
+            fflush(stdout);
             int ans = ceEngine.query(action.quals);
             score += dataExecuter.answer(ans);
             cnt++;
