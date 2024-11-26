@@ -1,13 +1,11 @@
-#include <common/Root.h>
 #include <common/Expression.h>
+#include <common/Root.h>
+
 #include <climits>
 
-// TODO: 
+// TODO:
 // - 1. Get it to compile
 // - 2. Make sure imports work
-
-// - 3. Add numberOfInterationsOfMax -> keepingtrack of number of mins and maxes, reset when max changes or new value is added that is equal to max
-// - 4. If max is deleted and all instances of max are deleted, then take the midpoint of the highest populated bucket -> decrementaing relevant bucket
 
 class ColumnStats {
    public:
@@ -68,7 +66,7 @@ class ColumnStats {
 
         // how many rows are in higher buckets
         int rowsInHigherBuckets = 0;
-        for (int i = BucketID + 1; i < this->MAX_VAL/this->BUCKET_WIDTH; i++) {
+        for (int i = BucketID + 1; i < this->MAX_VAL / this->BUCKET_WIDTH; i++) {
             rowsInHigherBuckets += this->GetBucketRows(i);
         }
 
@@ -174,7 +172,6 @@ class ColumnStats {
 
     int BUCKET_WIDTH = 100000;
     const int MAX_VAL = 20000000;
-
 
     // bucketId -> number of rows in bucket
     int* buckets;
