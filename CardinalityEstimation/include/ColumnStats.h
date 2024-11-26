@@ -120,7 +120,6 @@ class ColumnStats {
 
         // if searching for something less than minimum or greater than maximum
         if (compareOp == CompareOp::EQUAL) {
-            printf("%d\n", this->getMax());
             if (this->getMax() < target) {
                 return false;
             }

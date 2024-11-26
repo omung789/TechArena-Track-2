@@ -17,13 +17,6 @@ void CEEngine::deleteTuple(const std::vector<int> &tuple, int tupleId) {
 }
 
 int CEEngine::query(const std::vector<CompareExpression> &quals) {
-    // print quals
-    std::cout << "Query parameters:" << std::endl;
-    for (const auto &expression : quals) {
-        std::cout << "Column Index: " << expression.columnIdx
-                  << ", Value: " << expression.value
-                  << ", Compare Operation: " << expression.compareOp << std::endl;
-    }
 
     // Implement your query logic here.
     int matches = 1;
