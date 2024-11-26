@@ -3,6 +3,10 @@
 
 #include <climits>
 
+#define MAX_VAL 20000000
+#define BUCKET_WIDTH 100000
+#define BUCKET_COUNT int(MAX_VAL / BUCKET_WIDTH)
+
 // TODO:
 // - 1. Get it to compile
 // - 2. Make sure imports work
@@ -17,7 +21,6 @@ class ColumnStats {
         setMin(INT_MAX);
         setMax(INT_MIN);
         setRecords(0);
-        buckets = new int[MAX_VAL / BUCKET_WIDTH]();
     };
 
     int HandleQuery(int target, CompareOp compareOp) {
@@ -41,32 +44,32 @@ class ColumnStats {
         // gets lower bound of higher bucket and minuses lower bound of lower bucket
         // probability that a number in range [bucketMin, buacketMax] is in the bucket that is bound by [bucketMin, bucketMax]
         // i.e., the probability that number 5 is in bucket [0, 10]
-        double p = rowsInBucket / this->BUCKET_WIDTH;
+        double p = rowsInBucket / BUCKET_WIDTH;
 
         return p > 0.5 ? 1 : 0;
     }
 
     int FindBucket(int target) {
         // return the bucket id of the target value's bucket
-        return int(target / this->BUCKET_WIDTH) - 1;
+        return int(target / BUCKET_WIDTH) - 1;
     }
 
     int GuessRowsGreaterThan(int target) {
         // get bucket data
         int BucketID = this->FindBucket(target);
         int bucketSize = this->GetBucketRows(BucketID);
-        int bucketMin = BucketID * this->BUCKET_WIDTH;
+        int bucketMin = BucketID * BUCKET_WIDTH;
 
         // caluclate how far 'into' the bucket the target is
         // will be more accurate the closer to a unifrom distribution the bucket is is
-        int targetPercentage = (target - bucketMin) / this->BUCKET_WIDTH;
+        int targetPercentage = (target - bucketMin) / BUCKET_WIDTH;
 
         // how many rows are less than or equal to target
         int rowsLessThanTarget = targetPercentage * bucketSize;
 
         // how many rows are in higher buckets
         int rowsInHigherBuckets = 0;
-        for (int i = BucketID + 1; i < this->MAX_VAL / this->BUCKET_WIDTH; i++) {
+        for (int i = BucketID + 1; i < BUCKET_COUNT; i++) {
             rowsInHigherBuckets += this->GetBucketRows(i);
         }
 
@@ -170,11 +173,8 @@ class ColumnStats {
      */
     int records;
 
-    int BUCKET_WIDTH = 100000;
-    const int MAX_VAL = 20000000;
-
     // bucketId -> number of rows in bucket
-    int* buckets;
+    int buckets[BUCKET_COUNT];
 
     /**
      * @brief Generates statistics for a given column and store them in this class's attributes.
