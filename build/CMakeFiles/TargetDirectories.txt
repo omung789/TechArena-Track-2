@@ -1,3 +1,0 @@
-/cygdrive/c/Users/omung/OneDrive - University College London/agorize_playground/build/CMakeFiles/agorize_playground.dir
-/cygdrive/c/Users/omung/OneDrive - University College London/agorize_playground/build/CMakeFiles/edit_cache.dir
-/cygdrive/c/Users/omung/OneDrive - University College London/agorize_playground/build/CMakeFiles/rebuild_cache.dir
