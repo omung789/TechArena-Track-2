@@ -6,7 +6,7 @@
 #ifndef CARDINALITYESTIMATION_EXPR
 #define CARDINALITYESTIMATION_EXPR
 
-#include "Root.h"
+#include <common/Root.h>
 /**
  * An enum stands for the column filter operator.
  */

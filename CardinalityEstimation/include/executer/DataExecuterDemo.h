@@ -4,9 +4,9 @@
 // Demo data generator for local debugging. You can implement your own data generator for debugging based on this class.
 //
 
-#include "../common/Root.h"
-#include "../common/Expression.h"
-#include "../executer/DataExecuter.h"
+#include <common/Root.h>
+#include <common/Expression.h>
+#include <executer/DataExecuter.h>
 
 /**
  * An enum stands for the action operator.
