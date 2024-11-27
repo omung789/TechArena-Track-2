@@ -43,6 +43,5 @@
 Thumbs.db
 
 # build files
-build/
-
-/CardinatlityEstimation/build/
+build/*
+/CardinatlityEstimation/build/*
