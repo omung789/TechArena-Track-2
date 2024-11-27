@@ -1,16 +1,16 @@
+#include <climits>
+
 #include "common/Expression.h"
 #include "common/Root.h"
-
-#include <climits>
 
 #define MAX_VAL 20000000
 #define BUCKET_WIDTH 100000
 #define BUCKET_COUNT int(MAX_VAL / BUCKET_WIDTH) + 1
 
-// TODO:
-// - 1. Get it to compile
-// - 2. Make sure imports work
-
+/**
+ * @brief Stands for index of different columns
+ *
+ */
 enum ColumnIdx { COLUMN_A = 0,
                  COLUMN_B = 1 };
 
@@ -26,6 +26,13 @@ class ColumnStats {
         setRecords(0);
     };
 
+    /**
+     * @brief Returns the estimated number of rows that will be returned by the query.
+     *
+     * @param target Query target
+     * @param compareOp Query operator
+     * @return `int` The estimated number of rows that will be returned by the query.
+     */
     int HandleQuery(int target, CompareOp compareOp) {
         if (!InRange(target, compareOp)) {
             return 0;
@@ -52,6 +59,12 @@ class ColumnStats {
         return p > 0.5 ? 1 : 0;
     }
 
+    /**
+     * @brief Finds a value's bucket.
+     *
+     * @param target The value which we are trying to find the bucket of.
+     * @return `int` The bucket index of the bucket that the target value is in, or -1.
+     */
     int FindBucket(int target) {
         // return the bucket id of the target value's bucket
         if (target <= MAX_VAL) {
@@ -61,6 +74,12 @@ class ColumnStats {
         }
     }
 
+    /**
+     * @brief Performs histogram calculations to determine how many rows are greater than the target value.
+     *
+     * @param target Target Value
+     * @return `int` The estimated number of rows that are greater than the target
+     */
     int GuessRowsGreaterThan(int target) {
         // get bucket data
         int BucketID = this->FindBucket(target);
@@ -83,11 +102,22 @@ class ColumnStats {
         return rowsLessThanTarget + rowsInHigherBuckets;
     }
 
+    /**
+     * @brief Get the number of rows in a bucket.
+     *
+     * @param bucketID The bucket index of the bucket we want to get the number of rows of.
+     * @return `int` The number of rows in the bucket.
+     */
     int GetBucketRows(int bucketID) {
         // return the number of values in the bucket
         return this->buckets[bucketID];
     }
 
+    /**
+     * @brief Processes new input data and updates the column statistics.
+     *
+     * @param newData The new data to add to the column.
+     */
     void ProcessNewInput(int newData) {
         if (this->getRecords() == 0) {
             setMin(newData);
@@ -176,11 +206,12 @@ class ColumnStats {
      */
     int max;
 
-    /* Number of records in the column
+    /* @brief Number of records in the column
      */
     int records;
 
-    // bucketId -> number of rows in bucket
+    /* @brief Number of values in each bucket
+     */
     int buckets[BUCKET_COUNT];
 
     /**
