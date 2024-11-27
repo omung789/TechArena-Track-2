@@ -11,6 +11,9 @@
 // - 1. Get it to compile
 // - 2. Make sure imports work
 
+enum ColumnIdx { COLUMN_A = 0,
+                 COLUMN_B = 1 };
+
 class ColumnStats {
    public:
     /**

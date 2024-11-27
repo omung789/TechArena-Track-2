@@ -13,12 +13,9 @@
 enum CompareOp { EQUAL = 0,
                  GREATER = 1 };
 
-enum ColumnIdx { COLUMN_A = 0,
-                 COLUMN_B = 1 };
-
-                 // > 500 in B
-                 // = 1000 in A
-                 // = 1000 in B and > 500 in B
+// > 500 in B
+// = 1000 in A
+// = 1000 in B and > 500 in B
 
 /**
  * A struct for the expression of a column compare operation.
