@@ -263,7 +263,7 @@ class ColumnStats {
      * @brief Decrement records by 1 when a record is deleted.
      */
     void decrementRecords() {
-        setRecords(getRecords() - 1);
+        setRecords(min(getRecords() - 1, 0));
     }
 
     /**
@@ -277,8 +277,8 @@ class ColumnStats {
 
     /**
      * @brief Returns the midpoint of the lowest occupied bucket (or 0).
-     * 
-     * @return `int` The midpoint of the lowest occupied bucket (or 0). 
+     *
+     * @return `int` The midpoint of the lowest occupied bucket (or 0).
      */
     int findNewMin() {
         // perform a binary search to find the midpoint of the lowest occupied bucket
@@ -301,8 +301,8 @@ class ColumnStats {
 
     /**
      * @brief Returns the midpoint of the highest occupied bucket (or 0).
-     * 
-     * @return `int` The midpoint of the highest occupied bucket (or 0). 
+     *
+     * @return `int` The midpoint of the highest occupied bucket (or 0).
      */
     int findNewMax() {
         // perform a binary search to find the midpoint of the highest occupied bucket
