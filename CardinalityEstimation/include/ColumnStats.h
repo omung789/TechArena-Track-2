@@ -263,7 +263,7 @@ class ColumnStats {
      * @brief Decrement records by 1 when a record is deleted.
      */
     void decrementRecords() {
-        setRecords(min(getRecords() - 1, 0));
+        setRecords(std::min(getRecords() - 1, 0));
     }
 
     /**
