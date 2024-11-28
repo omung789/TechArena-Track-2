@@ -215,22 +215,6 @@ class ColumnStats {
     int buckets[BUCKET_COUNT];
 
     /**
-     * @brief Generates statistics for a given column and store them in this class's attributes.
-     *
-     * @param column List of tuples to analyse.
-     */
-    void AnalyseColumn(std::vector<int> column) {
-        for (int i = 0; i < this->records; i++) {
-            if (column[i] < this->min) {
-                this->setMin(column[i]);
-            }
-            if (column[i] > this->max) {
-                this->setMax(column[i]);
-            }
-        }
-    };
-
-    /**
      * @brief Set the minimum value in the column.
      *
      * @param min the new value to set the minimum value to.
