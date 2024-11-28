@@ -3,16 +3,13 @@
 #include "../include/common/Root.h"
 
 void CEEngine::insertTuple(const std::vector<int> &tuple) {
-    storage.push_back(tuple);
-
     ColumnAStats->ProcessNewInput(tuple[0]);
     ColumnBStats->ProcessNewInput(tuple[1]);
 }
 
 void CEEngine::deleteTuple(const std::vector<int> &tuple, int tupleId) {
-    if (tupleId >= 0 && tupleId < storage.size() && storage[tupleId] == tuple) {
-        storage.erase(storage.begin() + tupleId);
-    }
+    ColumnAStats->ProcessDelete(tuple[0]);
+    ColumnBStats->ProcessDelete(tuple[1]);
 }
 
 int CEEngine::query(const std::vector<CompareExpression> &quals) {
