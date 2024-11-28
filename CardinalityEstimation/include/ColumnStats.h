@@ -60,6 +60,26 @@ class ColumnStats {
     }
 
     /**
+     * @brief Deletes a value from the column and updates the column statistics.
+     *
+     * @param target The value to be delted from the column
+     */
+    void ProcessDelete(int target) {
+        // remove from bucket
+        this->buckets[this->FindBucket(target)]--;
+
+        if (target >= getMax()) {
+            // find new max
+            setMax(findNewMax());
+        } else if (target <= getMin()) {
+            // find new min
+            setMin(findNewMin());
+        }
+
+        decrementRecords();
+    }
+
+    /**
      * @brief Finds a value's bucket.
      *
      * @param target The value which we are trying to find the bucket of.
@@ -240,11 +260,66 @@ class ColumnStats {
     }
 
     /**
+     * @brief Decrement records by 1 when a record is deleted.
+     */
+    void decrementRecords() {
+        setRecords(getRecords() - 1);
+    }
+
+    /**
      * @brief Set records to a specific value.
      *
      * @param records Value to set records to.
      */
     void setRecords(int records) {
         this->records = records;
+    }
+
+    /**
+     * @brief Returns the midpoint of the lowest occupied bucket (or 0).
+     * 
+     * @return `int` The midpoint of the lowest occupied bucket (or 0). 
+     */
+    int findNewMin() {
+        // perform a binary search to find the midpoint of the lowest occupied bucket
+        int l = 0;
+        int r = std::size(buckets) - 1;
+        int res = -1;
+
+        while (l <= r) {
+            int m = l + (r - l) / 2;
+            if (this->GetBucketRows(m) > 0) {
+                res = m;  // could be anser, check if there is a lower one
+                r = m + 1;
+            } else {
+                l = m + 1;
+            }
+        }
+
+        return res != -1 ? (res + 0.5) * BUCKET_WIDTH : 0;
+    }
+
+    /**
+     * @brief Returns the midpoint of the highest occupied bucket (or 0).
+     * 
+     * @return `int` The midpoint of the highest occupied bucket (or 0). 
+     */
+    int findNewMax() {
+        // perform a binary search to find the midpoint of the highest occupied bucket
+        int l = 0;
+        int r = std::size(buckets) - 1;
+        int res = -1;
+
+        while (l < r) {
+            int m = l + (r - l) / 2;
+            if (this->GetBucketRows(m) > 0) {
+                l = m + 1;
+                res = m;
+            } else {
+                r = m - 1;
+            }
+        }
+
+        return res != -1 ? (res + 0.5) * BUCKET_WIDTH : 0;
     }
 };
