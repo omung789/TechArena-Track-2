@@ -271,22 +271,14 @@ class ColumnStats {
      * @return `int` The midpoint of the lowest occupied bucket (or 0).
      */
     int findNewMin() {
-        // perform a binary search to find the midpoint of the lowest occupied bucket
-        int l = 0;
-        int r = BUCKET_COUNT - 1;
-        int res = -1;
-
-        while (l <= r) {
-            int m = l + (r - l) / 2;
-            if (this->GetBucketRows(m) > 0) {
-                res = m;  // could be anser, check if there is a lower one
-                r = m - 1;
-            } else {
-                l = m + 1;
+        for (int i = 0; i < ARRAY_SIZE; i++) {
+            if (this->GetBucketRows(i) > 0) {
+                return (i + 0.5) * BUCKET_WIDTH;
             }
         }
+        return 0;
 
-        return res != -1 ? (res + 0.5) * BUCKET_WIDTH : 0;
+        //return res != -1 ? (res + 0.5) * BUCKET_WIDTH : 0;
     }
 
     /**
@@ -296,21 +288,12 @@ class ColumnStats {
      */
     int findNewMax() {
         // perform a binary search to find the midpoint of the highest occupied bucket
-        int l = 0;
-        int r = BUCKET_COUNT;
-        int res = -1;
-
-        while (l < r) {
-            int m = l + (r - l) / 2;
-            if (this->GetBucketRows(m) > 0) {
-                l = m + 1;
-                res = m;
-            } else {
-                r = m - 1;
+        for (int i = ARRAY_SIZE - 1; i >= 0; i--) {
+            if (this->GetBucketRows(i) > 0) {
+                return (i + 0.5) * BUCKET_WIDTH;
             }
         }
-
-        return res != -1 ? (res + 0.5) * BUCKET_WIDTH : 0;
+        return 0;
     }
 
     /**
