@@ -13,7 +13,7 @@ void CEEngine::deleteTuple(const std::vector<int> &tuple, int tupleId) {
 }
 
 int CEEngine::query(const std::vector<CompareExpression> &quals) {
-    int matches = 1;
+    double matches = 1;
 
     for (CompareExpression expression : quals) {
         switch (expression.columnIdx) {
