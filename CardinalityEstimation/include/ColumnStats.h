@@ -5,7 +5,8 @@
 
 #define MAX_VAL 20000000
 #define BUCKET_WIDTH 100000
-#define BUCKET_COUNT int(MAX_VAL / BUCKET_WIDTH) + 1
+#define BUCKET_COUNT int(MAX_VAL / BUCKET_WIDTH)
+#define ARRAY_SIZE BUCKET_COUNT + 1
 
 /**
  * @brief Stands for index of different columns
@@ -90,7 +91,7 @@ class ColumnStats {
         if (target <= MAX_VAL) {
             return int(target / BUCKET_WIDTH);
         } else {
-            return BUCKET_COUNT - 1;
+            return BUCKET_COUNT;
         }
     }
 
@@ -115,7 +116,7 @@ class ColumnStats {
 
         // how many rows are in higher buckets
         int rowsInHigherBuckets = 0;
-        for (int i = BucketID + 1; i < BUCKET_COUNT; i++) {
+        for (int i = BucketID + 1; i < ARRAY_SIZE; i++) {
             rowsInHigherBuckets += this->GetBucketRows(i);
         }
 
@@ -232,7 +233,7 @@ class ColumnStats {
 
     /* @brief Number of values in each bucket
      */
-    int buckets[BUCKET_COUNT];
+    int buckets[ARRAY_SIZE];
 
     /**
      * @brief Set the minimum value in the column.
@@ -283,7 +284,7 @@ class ColumnStats {
     int findNewMin() {
         // perform a binary search to find the midpoint of the lowest occupied bucket
         int l = 0;
-        int r = std::size(buckets) - 1;
+        int r = BUCKET_COUNT;
         int res = -1;
 
         while (l <= r) {
@@ -307,7 +308,7 @@ class ColumnStats {
     int findNewMax() {
         // perform a binary search to find the midpoint of the highest occupied bucket
         int l = 0;
-        int r = std::size(buckets) - 1;
+        int r = BUCKET_COUNT;
         int res = -1;
 
         while (l < r) {
