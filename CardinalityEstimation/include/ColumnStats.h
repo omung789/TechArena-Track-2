@@ -273,14 +273,14 @@ class ColumnStats {
     int findNewMin() {
         // perform a binary search to find the midpoint of the lowest occupied bucket
         int l = 0;
-        int r = BUCKET_COUNT;
+        int r = BUCKET_COUNT - 1;
         int res = -1;
 
         while (l <= r) {
             int m = l + (r - l) / 2;
             if (this->GetBucketRows(m) > 0) {
                 res = m;  // could be anser, check if there is a lower one
-                r = m + 1;
+                r = m - 1;
             } else {
                 l = m + 1;
             }
