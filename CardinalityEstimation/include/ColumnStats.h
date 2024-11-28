@@ -81,60 +81,6 @@ class ColumnStats {
     }
 
     /**
-     * @brief Finds a value's bucket.
-     *
-     * @param target The value which we are trying to find the bucket of.
-     * @return `int` The bucket index of the bucket that the target value is in, or -1.
-     */
-    int FindBucket(int target) {
-        // return the bucket id of the target value's bucket
-        if (target <= MAX_VAL) {
-            return int(target / BUCKET_WIDTH);
-        } else {
-            return BUCKET_COUNT;
-        }
-    }
-
-    /**
-     * @brief Performs histogram calculations to determine how many rows are greater than the target value.
-     *
-     * @param target Target Value
-     * @return `int` The estimated number of rows that are greater than the target
-     */
-    int GuessRowsGreaterThan(int target) {
-        // get bucket data
-        int BucketID = this->FindBucket(target);
-        int bucketSize = this->GetBucketRows(BucketID);
-        int bucketMin = BucketID * BUCKET_WIDTH;
-
-        // caluclate how far 'into' the bucket the target is
-        // will be more accurate the closer to a unifrom distribution the bucket is is
-        int targetPercentage = (target - bucketMin) / BUCKET_WIDTH;
-
-        // how many rows are less than or equal to target
-        int rowsLessThanTarget = targetPercentage * bucketSize;
-
-        // how many rows are in higher buckets
-        int rowsInHigherBuckets = 0;
-        for (int i = BucketID + 1; i < ARRAY_SIZE; i++) {
-            rowsInHigherBuckets += this->GetBucketRows(i);
-        }
-
-        return rowsLessThanTarget + rowsInHigherBuckets;
-    }
-
-    /**
-     * @brief Get the number of rows in a bucket.
-     *
-     * @param bucketID The bucket index of the bucket we want to get the number of rows of.
-     * @return `int` The number of rows in the bucket.
-     */
-    int GetBucketRows(int bucketID) {
-        // return the number of values in the bucket
-        return this->buckets[bucketID];
-    }
-
-    /**
      * @brief Processes new input data and updates the column statistics.
      *
      * @param newData The new data to add to the column.
@@ -156,6 +102,73 @@ class ColumnStats {
         this->buckets[this->FindBucket(newData)]++;
 
         incrementRecords();
+    }
+
+    /**
+     * @brief Get the number of records in the column.
+     *
+     * @return The number of records in the column.
+     */
+    int getRecords() {
+        return records;
+    };
+
+   private:
+    /* @brief min value in column.
+     */
+    int min;
+
+    /* @brief max value in column.
+     */
+    int max;
+
+    /* @brief Number of records in the column
+     */
+    int records;
+
+    /* @brief Number of values in each bucket
+     */
+    int buckets[ARRAY_SIZE];
+
+    /**
+     * @brief Set the minimum value in the column.
+     *
+     * @param min the new value to set the minimum value to.
+     */
+    void setMin(int min) {
+        this->min = min;
+    }
+
+    /**
+     * @brief Set the maximum value in the column.
+     *
+     * @param max the new value to set the maximum value to.
+     */
+    void setMax(int max) {
+        this->max = max;
+    }
+
+    /**
+     * @brief Set records to a specific value.
+     *
+     * @param records Value to set records to.
+     */
+    void setRecords(int records) {
+        this->records = records;
+    }
+
+    /**
+     * @brief Increment records by 1 when a new record is added.
+     */
+    void incrementRecords() {
+        setRecords(getRecords() + 1);
+    }
+
+    /**
+     * @brief Decrement records by 1 when a record is deleted.
+     */
+    void decrementRecords() {
+        setRecords(std::min(getRecords() - 1, 0));
     }
 
     /**
@@ -210,70 +223,46 @@ class ColumnStats {
     }
 
     /**
-     * @brief Get the number of records in the column.
+     * @brief Finds a value's bucket.
      *
-     * @return The number of records in the column.
+     * @param target The value which we are trying to find the bucket of.
+     * @return `int` The bucket index of the bucket that the target value is in, or -1.
      */
-    int getRecords() {
-        return records;
-    };
-
-   private:
-    /* @brief min value in column.
-     */
-    int min;
-
-    /* @brief max value in column.
-     */
-    int max;
-
-    /* @brief Number of records in the column
-     */
-    int records;
-
-    /* @brief Number of values in each bucket
-     */
-    int buckets[ARRAY_SIZE];
-
-    /**
-     * @brief Set the minimum value in the column.
-     *
-     * @param min the new value to set the minimum value to.
-     */
-    void setMin(int min) {
-        this->min = min;
+    int FindBucket(int target) {
+        // return the bucket id of the target value's bucket
+        if (target <= MAX_VAL) {
+            return int(target / BUCKET_WIDTH);
+        } else {
+            return BUCKET_COUNT;
+        }
     }
 
     /**
-     * @brief Set the maximum value in the column.
+     * @brief Performs histogram calculations to determine how many rows are greater than the target value.
      *
-     * @param max the new value to set the maximum value to.
+     * @param target Target Value
+     * @return `int` The estimated number of rows that are greater than the target
      */
-    void setMax(int max) {
-        this->max = max;
-    }
+    int GuessRowsGreaterThan(int target) {
+        // get bucket data
+        int BucketID = this->FindBucket(target);
+        int bucketSize = this->GetBucketRows(BucketID);
+        int bucketMin = BucketID * BUCKET_WIDTH;
 
-    /**
-     * @brief Increment records by 1 when a new record is added.
-     */
-    void incrementRecords() {
-        setRecords(getRecords() + 1);
-    }
+        // caluclate how far 'into' the bucket the target is
+        // will be more accurate the closer to a unifrom distribution the bucket is is
+        int targetPercentage = (target - bucketMin) / BUCKET_WIDTH;
 
-    /**
-     * @brief Decrement records by 1 when a record is deleted.
-     */
-    void decrementRecords() {
-        setRecords(std::min(getRecords() - 1, 0));
-    }
+        // how many rows are less than or equal to target
+        int rowsLessThanTarget = targetPercentage * bucketSize;
 
-    /**
-     * @brief Set records to a specific value.
-     *
-     * @param records Value to set records to.
-     */
-    void setRecords(int records) {
-        this->records = records;
+        // how many rows are in higher buckets
+        int rowsInHigherBuckets = 0;
+        for (int i = BucketID + 1; i < ARRAY_SIZE; i++) {
+            rowsInHigherBuckets += this->GetBucketRows(i);
+        }
+
+        return rowsLessThanTarget + rowsInHigherBuckets;
     }
 
     /**
@@ -322,5 +311,16 @@ class ColumnStats {
         }
 
         return res != -1 ? (res + 0.5) * BUCKET_WIDTH : 0;
+    }
+
+    /**
+     * @brief Get the number of rows in a bucket.
+     *
+     * @param bucketID The bucket index of the bucket we want to get the number of rows of.
+     * @return `int` The number of rows in the bucket.
+     */
+    int GetBucketRows(int bucketID) {
+        // return the number of values in the bucket
+        return this->buckets[bucketID];
     }
 };
