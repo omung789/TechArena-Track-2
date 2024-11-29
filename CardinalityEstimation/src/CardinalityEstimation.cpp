@@ -31,6 +31,21 @@ void CEEngine::insertTuple(const std::vector<int> &tuple) {
 void CEEngine::deleteTuple(const std::vector<int> &tuple, int tupleId) {
     ColumnAStats->ProcessDelete(tuple[0]);
     ColumnBStats->ProcessDelete(tuple[1]);
+
+    if (ColumnASample.find(tuple[1]) != ColumnASample.end()){
+        ColumnASample[tuple[1]] -= 1;
+        if (ColumnASample[tuple[1]] == 0) {
+            ColumnASample.erase(tuple[1]);
+        }
+    }
+
+    if (ColumnBSample.find(tuple[0]) != ColumnBSample.end()){
+        ColumnBSample[tuple[0]] -= 1;
+        if (ColumnBSample[tuple[0]] == 0) {
+            ColumnBSample.erase(tuple[0]);
+        }
+    }
+
 }
 
 int CEEngine::query(const std::vector<CompareExpression> &quals) {
