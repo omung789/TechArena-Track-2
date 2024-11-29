@@ -8,20 +8,20 @@ void CEEngine::insertTuple(const std::vector<int> &tuple) {
     // for every 5 elements, add to sample, to a max of num / 1000 elements
     if (iterations % 5 == 0) {
         if (ColumnBSample.size() <this->num / 1000) {
-            if (ColumnBSample.find(tuple[0]) == ColumnBSample.end()){
-                ColumnBSample[tuple[0]] = 1;
+            if (ColumnBSample.find(tuple[1]) == ColumnBSample.end()){
+                ColumnBSample[tuple[1]] = 1;
             }
             else {
-                ColumnBSample[tuple[0]] += 1;
+                ColumnBSample[tuple[1]] += 1;
             }
         }
 
         if (ColumnASample.size() <this->num / 1000) {
-            if (ColumnASample.find(tuple[1]) == ColumnASample.end()){
-                ColumnASample[tuple[1]] = 1;
+            if (ColumnASample.find(tuple[0]) == ColumnASample.end()){
+                ColumnASample[tuple[0]] = 1;
             }
             else {
-                ColumnASample[tuple[1]] += 1;
+                ColumnASample[tuple[0]] += 1;
             }
         }
     }
@@ -32,17 +32,17 @@ void CEEngine::deleteTuple(const std::vector<int> &tuple, int tupleId) {
     ColumnAStats->ProcessDelete(tuple[0]);
     ColumnBStats->ProcessDelete(tuple[1]);
 
-    if (ColumnASample.find(tuple[1]) != ColumnASample.end()){
-        ColumnASample[tuple[1]] -= 1;
-        if (ColumnASample[tuple[1]] == 0) {
-            ColumnASample.erase(tuple[1]);
+    if (ColumnASample.find(tuple[0]) != ColumnASample.end()){
+        ColumnASample[tuple[0]] -= 1;
+        if (ColumnASample[tuple[0]] == 0) {
+            ColumnASample.erase(tuple[0]);
         }
     }
 
-    if (ColumnBSample.find(tuple[0]) != ColumnBSample.end()){
-        ColumnBSample[tuple[0]] -= 1;
-        if (ColumnBSample[tuple[0]] == 0) {
-            ColumnBSample.erase(tuple[0]);
+    if (ColumnBSample.find(tuple[1]) != ColumnBSample.end()){
+        ColumnBSample[tuple[1]] -= 1;
+        if (ColumnBSample[tuple[1]] == 0) {
+            ColumnBSample.erase(tuple[1]);
         }
     }
 
