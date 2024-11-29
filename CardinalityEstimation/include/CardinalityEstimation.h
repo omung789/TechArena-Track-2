@@ -40,7 +40,10 @@ class CEEngine {
 
    private:
     DataExecuter *dataExecuter;
-
+    std::unordered_map<int, int> ColumnASample;
+    std::unordered_map<int, int> ColumnBSample;
+    int num;
+    int iterations;
     ColumnStats *ColumnAStats;
     ColumnStats *ColumnBStats;
 };
