@@ -4,8 +4,11 @@
 // You should modify this file.
 //
 #include "ColumnStats.h"
+#include "FenwickTree.h"
 #include "common/Expression.h"
+#include "common/Root.h"
 #include "executer/DataExecuter.h"
+
 class CEEngine {
    public:
     /**
@@ -44,10 +47,11 @@ class CEEngine {
     static const int MAX_VALUE = 20000000;  // Maximum value range for A and B
     static const int BUCKET_SIZE = 1000;    // Size of each bucket in the histogram
 
-    std::vector<int> histogramA;   // Histogram for column A
-    std::vector<int> histogramB;   // Histogram for column B
-    std::vector<int> cumulativeA;  // Cumulative frequencies for column A
-    std::vector<int> cumulativeB;  // Cumulative frequencies for column B
+    FenwickTree fenwickA;
+    FenwickTree fenwickB;
+
+    std::vector<int> frequencyA;  // Cumulative frequencies for column A
+    std::vector<int> frequencyB;  // Cumulative frequencies for column B
     int totalRows;
 
     void updateHistogram(std::vector<int> &histogram, std::vector<int> &cumulative, int value, int delta) {
@@ -76,6 +80,13 @@ class CEEngine {
             return cumulative.back() - cumulative[bucketIdx];
         }
         return 0;
+    }
+
+    int valueToIndex(int value) const {
+        if (value < 0 || value > MAX_VALUE) {
+            return -1;  // Return an invalid index to handle gracefully
+        }
+        return value / BUCKET_SIZE + 1;
     }
 };
 
