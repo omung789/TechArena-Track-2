@@ -3,55 +3,50 @@
 #include "../include/common/Root.h"
 
 void CEEngine::insertTuple(const std::vector<int> &tuple) {
-    ColumnAStats->ProcessNewInput(tuple[0]);
-    ColumnBStats->ProcessNewInput(tuple[1]);
+    if (tuple.size() != 2) {
+        std::cerr << "Invalid tuple size: " << tuple.size() << std::endl;
+        return;
+    }
+    updateHistogram(histogramA, cumulativeA, tuple[0], 1);
+    updateHistogram(histogramB, cumulativeB, tuple[1], 1);
+    totalRows++;
 }
 
 void CEEngine::deleteTuple(const std::vector<int> &tuple, int tupleId) {
-    ColumnAStats->ProcessDelete(tuple[0]);
-    ColumnBStats->ProcessDelete(tuple[1]);
+    if (tuple.size() != 2) {
+        std::cerr << "Invalid tuple size: " << tuple.size() << std::endl;
+        return;
+    }
+    updateHistogram(histogramA, cumulativeA, tuple[0], -1);
+    updateHistogram(histogramB, cumulativeB, tuple[1], -1);
+    totalRows--;
 }
 
 int CEEngine::query(const std::vector<CompareExpression> &quals) {
-    double matches = 1;
+    int estimateA = totalRows, estimateB = totalRows;
 
-    for (CompareExpression expression : quals) {
-        switch (expression.columnIdx) {
-            case ColumnIdx::COLUMN_A:
-                if (ColumnAStats->getRecords() == 0) {
-                    matches = 0;
-                } else {
-                    matches *= ColumnAStats->HandleQuery(expression.value, expression.compareOp) / ColumnAStats->getRecords();
-                }
-                break;
-            case ColumnIdx::COLUMN_B:
-                if (ColumnBStats->getRecords() == 0) {
-                    matches = 0;
-                } else {
-                    matches *= ColumnBStats->HandleQuery(expression.value, expression.compareOp) / ColumnBStats->getRecords();
-                }
-                break;
-            default:
-                // if it gets here were cooked ngl
-                // means theyre querying another column that isnt a or b.
-                matches = 0;
-                break;
-        }
-        if (matches == 0 || std::isnan(matches) || std::isinf(matches)) {
-            return 0;
+    for (const auto &expr : quals) {
+        if (expr.columnIdx == 0) {
+            estimateA = estimateCardinality(histogramA, cumulativeA, expr);
+        } else if (expr.columnIdx == 1) {
+            estimateB = estimateCardinality(histogramB, cumulativeB, expr);
         }
     }
 
-    return int(matches * ColumnAStats->getRecords());
+    return std::min(estimateA, estimateB);
 }
 
 void CEEngine::prepare() {
-    return;
+    // Precompute cumulative frequencies
+    std::partial_sum(histogramA.begin(), histogramA.end(), cumulativeA.begin());
+    std::partial_sum(histogramB.begin(), histogramB.end(), cumulativeB.begin());
 }
 
 CEEngine::CEEngine(int num, DataExecuter *dataExecuter) {
     this->dataExecuter = dataExecuter;
 
-    this->ColumnAStats = new ColumnStats();
-    this->ColumnBStats = new ColumnStats();
+    histogramA.resize(MAX_VALUE / BUCKET_SIZE + 1, 0);
+    histogramB.resize(MAX_VALUE / BUCKET_SIZE + 1, 0);
+    cumulativeA.resize(MAX_VALUE / BUCKET_SIZE + 1, 0);
+    cumulativeB.resize(MAX_VALUE / BUCKET_SIZE + 1, 0);
 }
