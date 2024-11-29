@@ -45,3 +45,6 @@ Thumbs.db
 # build files
 build/*
 /CardinatlityEstimation/build/*
+
+*.tgz
+*.tar.gz
