@@ -77,7 +77,8 @@ class ColumnStats {
      */
     void ProcessDelete(int target) {
         // remove from bucket
-        this->buckets[this->FindBucket(target)]--;
+        int bucketID = this->FindBucket(target);
+        this->buckets[bucketID] = std::min(this->buckets[bucketID] - 1, 0);
 
         if (target >= getMax()) {
             // find new max
