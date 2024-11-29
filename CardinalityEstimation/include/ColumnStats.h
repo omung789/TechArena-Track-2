@@ -37,6 +37,7 @@ class ColumnStats {
      * @return `int` The estimated number of rows that will be returned by the query.
      */
     int HandleQuery(int target, CompareOp compareOp) {
+        // target not in column
         if (!InRange(target, compareOp)) {
             return 0;
         }
@@ -109,14 +110,12 @@ class ColumnStats {
                 occurancesOfMin++;
             } else if (newData < this->getMin()) {
                 setMin(newData);
-                occurancesOfMin = 1;
             }
 
             if (newData == this->getMax()) {
                 occurancesOfMax++;
             } else if (newData > this->getMax()) {
                 setMax(newData);
-                occurancesOfMax = 1;
             }
         }
 
@@ -162,6 +161,7 @@ class ColumnStats {
      */
     void setMin(int min) {
         this->min = min;
+        occurancesOfMin = 1;
     }
 
     /**
@@ -171,6 +171,7 @@ class ColumnStats {
      */
     void setMax(int max) {
         this->max = max;
+        occurancesOfMax = 1;
     }
 
     /**

@@ -18,16 +18,24 @@ int CEEngine::query(const std::vector<CompareExpression> &quals) {
     for (CompareExpression expression : quals) {
         switch (expression.columnIdx) {
             case ColumnIdx::COLUMN_A:
-                matches *= ColumnAStats->HandleQuery(expression.value, expression.compareOp) / ColumnAStats->getRecords();
+                if (ColumnAStats->getRecords() == 0) {
+                    matches = 0;
+                } else {
+                    matches *= ColumnAStats->HandleQuery(expression.value, expression.compareOp) / ColumnAStats->getRecords();
+                }
                 break;
             case ColumnIdx::COLUMN_B:
-                matches *= ColumnBStats->HandleQuery(expression.value, expression.compareOp) / ColumnBStats->getRecords();
+                if (ColumnBStats->getRecords() == 0) {
+                    matches = 0;
+                } else {
+                    matches *= ColumnBStats->HandleQuery(expression.value, expression.compareOp) / ColumnBStats->getRecords();
+                }
                 break;
             default:
                 // if it gets here were cooked ngl
                 // means theyre querying another column that isnt a or b.
                 matches = 0;
-                 break;
+                break;
         }
         if (matches == 0) {
             return 0;
