@@ -25,6 +25,8 @@ class ColumnStats {
         setMin(INT_MAX);
         setMax(INT_MIN);
         setRecords(0);
+        this->occurancesOfMin = 0;
+        this->occurancesOfMax = 0;
     };
 
     /**
@@ -47,6 +49,14 @@ class ColumnStats {
             }
         }
 
+        if (target == this->getMin()) {
+            return this->occurancesOfMin;
+        }
+
+        if (target == this->getMax()) {
+            return this->occurancesOfMax;
+        }
+
         // determine probability that it is in it's bucket
         // number of rows in bucket / (bucket size) -> skewed data fucks it
         int bucketID = FindBucket(target);
@@ -56,7 +66,6 @@ class ColumnStats {
         // probability that a number in range [bucketMin, buacketMax] is in the bucket that is bound by [bucketMin, bucketMax]
         // i.e., the probability that number 5 is in bucket [0, 10]
         double p = rowsInBucket / BUCKET_WIDTH;
-
         return p > 0.5 ? 1 : 0;
     }
 
@@ -71,10 +80,16 @@ class ColumnStats {
 
         if (target >= getMax()) {
             // find new max
-            setMax(findNewMax());
+            this->occurancesOfMax--;
+            if (this->occurancesOfMax == 0) {
+                setMax(findNewMax());
+            }
         } else if (target <= getMin()) {
             // find new min
-            setMin(findNewMin());
+            this->occurancesOfMin--;
+            if (this->occurancesOfMin == 0) {
+                setMin(findNewMin());
+            }
         }
 
         decrementRecords();
@@ -90,11 +105,18 @@ class ColumnStats {
             setMin(newData);
             setMax(newData);
         } else {
-            if (newData < this->getMin()) {
+            if (newData == this->getMin()) {
+                occurancesOfMin++;
+            } else if (newData < this->getMin()) {
                 setMin(newData);
+                occurancesOfMin = 1;
             }
-            if (newData > this->getMax()) {
+
+            if (newData == this->getMax()) {
+                occurancesOfMax++;
+            } else if (newData > this->getMax()) {
                 setMax(newData);
+                occurancesOfMax = 1;
             }
         }
 
@@ -129,6 +151,9 @@ class ColumnStats {
     /* @brief Number of values in each bucket
      */
     int buckets[ARRAY_SIZE];
+
+    int occurancesOfMin;
+    int occurancesOfMax;
 
     /**
      * @brief Set the minimum value in the column.
@@ -185,20 +210,15 @@ class ColumnStats {
             return false;
         }
 
-        // if searching for something less than minimum or greater than maximum
-        if (compareOp == CompareOp::EQUAL) {
-            if (this->getMax() < target) {
-                return false;
-            }
-            if (this->getMin() > target) {
-                return false;
-            }
+        // if searching for something greater than maximum
+        // will be false whether > or =
+        if (this->getMax() < target) {
+            return false;
         }
 
-        if (compareOp == CompareOp::GREATER) {
-            if (this->getMax() < target) {
-                return false;
-            }
+        // if searching for something less than minimum
+        if (compareOp == CompareOp::EQUAL && this->getMin() > target) {
+            return false;
         }
 
         return true;
