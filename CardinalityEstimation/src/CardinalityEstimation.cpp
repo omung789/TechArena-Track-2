@@ -26,8 +26,6 @@ int CEEngine::query(const std::vector<CompareExpression> &quals) {
             default:
                 // if it gets here were cooked ngl
                 // means theyre querying another column that isnt a or b.
-                printf("Fuck");
-                fflush(stdout);
                 break;
         }
         if (matches == 0) {
