@@ -37,7 +37,7 @@ int CEEngine::query(const std::vector<CompareExpression> &quals) {
                 matches = 0;
                 break;
         }
-        if (matches == 0) {
+        if (matches == 0 || std::isnan(matches) || std::isinf(matches)) {
             return 0;
         }
     }
