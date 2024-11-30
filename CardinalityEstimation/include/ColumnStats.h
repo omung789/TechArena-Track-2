@@ -4,7 +4,7 @@
 #include "common/Root.h"
 
 #define MAX_VAL 20000000
-#define BUCKET_WIDTH 100000
+#define BUCKET_WIDTH 1000
 #define BUCKET_COUNT int(MAX_VAL / BUCKET_WIDTH)
 #define ARRAY_SIZE BUCKET_COUNT + 1
 
