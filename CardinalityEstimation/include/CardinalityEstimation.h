@@ -3,8 +3,10 @@
 //
 // You should modify this file.
 //
-#include "ColumnStats.h"
+
+#include "HLL.h"
 #include "common/Expression.h"
+#include "common/Root.h"
 #include "executer/DataExecuter.h"
 class CEEngine {
    public:
@@ -39,10 +41,9 @@ class CEEngine {
     ~CEEngine() = default;
 
    private:
+    HyperLogLog hllA;  // HyperLogLog for column A
+    HyperLogLog hllB;  // HyperLogLog for column B
     DataExecuter *dataExecuter;
-
-    ColumnStats *ColumnAStats;
-    ColumnStats *ColumnBStats;
 };
 
 #endif
