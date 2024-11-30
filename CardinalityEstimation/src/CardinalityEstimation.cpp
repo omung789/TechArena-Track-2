@@ -60,60 +60,32 @@ int CEEngine::query(const std::vector<CompareExpression> &quals) {
     for (CompareExpression expression : quals) {
         switch (expression.columnIdx) {
             case ColumnIdx::COLUMN_A:
-                // printf("columnA expression.compareOp: %d\n", expression.compareOp);
-                // printf("columnA expression.compareOp == CompareOp::EQUAL%d\n", expression.compareOp == CompareOp::EQUAL);
-                // printf("expression.value: %d\n", expression.value);
-                // printf("Keys in ColumnASample:\n");
-                // for (const auto &pair : ColumnASample) {
-                //     printf("%d ", pair.first);
-                // }
-                // printf("\n");
-                // fflush(stdout);
                 if (ColumnAStats->getRecords() == 0) {
-                    printf("columna start");
-                    fflush(stdout);
                     matches = 0;
                 }
                 // if the compare operation is equal and we have the value in our sample
                 else if (expression.compareOp == CompareOp::EQUAL && this->ColumnASample.count(expression.value) > 0) {
-                    printf("columna");
-                    fflush(stdout);
                     matches *= ColumnASample[expression.value] / this->ColumnASize;
                 } 
                 else {
-                    // printf("columna else\n");
-                    // fflush(stdout);
                     matches *= ColumnAStats->HandleQuery(expression.value, expression.compareOp) / ColumnAStats->getRecords();
                 }
                 break;
             case ColumnIdx::COLUMN_B:
-                // printf("columnB expression.compareOp: %d\n", expression.compareOp);
-                // printf("columnA expression.compareOp == CompareOp::EQUAL%d\n", expression.compareOp == CompareOp::EQUAL);
-                // printf("ColumnBSample  %d\n", ColumnBSample);
-                // printf("ColumnBSample.find(expression.value) != ColumnBSample.end() %d\n", ColumnBSample.find(expression.value) != ColumnBSample.end());
-                // fflush(stdout);
                 if (ColumnBStats->getRecords() == 0) {
-                    printf("columnb start");
-                    fflush(stdout);
                     matches = 0;
                 }
                 // if the compare operation is equal and we have the value in our sample
                 else if (expression.compareOp == CompareOp::EQUAL && this->ColumnBSample.count(expression.value) > 0) {
-                    printf("columnb");
-                    fflush(stdout);
                     matches *= ColumnBSample[expression.value] / this->ColumnBSize;
                 } 
                 else {
-                    // printf("columnb else\n");
-                    // fflush(stdout);
                     matches *= ColumnBStats->HandleQuery(expression.value, expression.compareOp) / ColumnBStats->getRecords();
                 }
                 break;
             default:
                 // if it gets here were cooked ngl
                 // means theyre querying another column that isnt a or b.
-                printf("default\n");
-                fflush(stdout);
                 matches = 0;
                 break;
         }
