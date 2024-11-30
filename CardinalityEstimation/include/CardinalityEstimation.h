@@ -43,7 +43,8 @@ class CEEngine {
     std::unordered_map<int, int> ColumnASample;
     std::unordered_map<int, int> ColumnBSample;
     int num;
-    int iterations;
+    int ColumnASize;
+    int ColumnBSize;
     ColumnStats *ColumnAStats;
     ColumnStats *ColumnBStats;
 };
